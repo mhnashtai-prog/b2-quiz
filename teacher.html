@@ -8,11 +8,13 @@
   <style>
     body { font-family: 'Roboto', sans-serif; background: #fafafa; margin: 0; padding: 2rem; }
     h1 { text-align: center; }
-    form { max-width: 500px; margin: 2rem auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    form { max-width: 600px; margin: 2rem auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
     label { display: block; margin-top: 1rem; font-weight: bold; }
     input, textarea, select { width: 100%; padding: 0.5rem; margin-top: 0.25rem; border-radius: 8px; border: 1px solid #ccc; }
-    button { margin-top: 1.5rem; padding: 0.75rem 1.5rem; border: none; border-radius: 10px; background: #4a90e2; color: white; cursor: pointer; }
+    textarea { min-height: 80px; resize: vertical; }
+    button { margin-top: 1rem; padding: 0.75rem 1.5rem; border: none; border-radius: 10px; background: #4a90e2; color: white; cursor: pointer; }
     button:hover { background: #357ab8; }
+    .queued { max-width: 600px; margin: 1rem auto; padding: 1rem; background: #eef6ff; border-radius: 8px; }
     .msg { text-align: center; margin-top: 1rem; font-weight: bold; }
   </style>
 </head>
@@ -39,16 +41,23 @@
     </select>
 
     <label>Question Text</label>
-    <textarea id="text" required></textarea>
+    <textarea id="text" placeholder="Write your question here... (supports multi-line prompts)" required></textarea>
 
     <label>Options (comma separated, only for MCQ or Drag)</label>
-    <input type="text" id="options">
+    <input type="text" id="options" placeholder="E.g. Paris,Rome,Berlin">
 
     <label>Answer</label>
-    <input type="text" id="answer" required>
+    <input type="text" id="answer" placeholder="Correct answer" required>
 
-    <button type="submit">Save Question</button>
+    <button type="button" id="addBtn">➕ Add Question</button>
+    <button type="submit">💾 Save All Questions</button>
   </form>
+
+  <div class="queued" id="queuedQuestions">
+    <h3>Queued Questions</h3>
+    <ul id="queuedList"></ul>
+  </div>
+
   <div class="msg" id="msg"></div>
 
   <script type="module">
@@ -59,25 +68,54 @@
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const form = document.getElementById("questionForm");
+    const queuedList = document.getElementById("queuedList");
     const msg = document.getElementById("msg");
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    let questionQueue = [];
+
+    // Add question to local queue
+    document.getElementById("addBtn").addEventListener("click", () => {
       const category = document.getElementById("category").value;
       const type = document.getElementById("type").value;
-      const text = document.getElementById("text").value;
+      const text = document.getElementById("text").value.trim();
       const options = document.getElementById("options").value;
-      const answer = document.getElementById("answer").value;
+      const answer = document.getElementById("answer").value.trim();
 
-      const { error } = await supabase.from("questions").insert([
-        { category, type, text, options: options || null, answer }
-      ]);
+      if (!text || !answer) {
+        msg.textContent = "⚠️ Question and Answer required.";
+        return;
+      }
+
+      const newQ = { category, type, text, options: options || null, answer };
+      questionQueue.push(newQ);
+
+      // Display in list
+      const li = document.createElement("li");
+      li.textContent = `[${category}] ${text} → ${answer}`;
+      queuedList.appendChild(li);
+
+      // Reset inputs but keep category
+      document.getElementById("text").value = "";
+      document.getElementById("options").value = "";
+      document.getElementById("answer").value = "";
+    });
+
+    // Save all queued questions to Supabase
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (questionQueue.length === 0) {
+        msg.textContent = "⚠️ No questions to save.";
+        return;
+      }
+
+      const { error } = await supabase.from("questions").insert(questionQueue);
 
       if (error) {
         msg.textContent = "❌ Error: " + error.message;
       } else {
-        msg.textContent = "✅ Question saved!";
-        form.reset();
+        msg.textContent = `✅ Saved ${questionQueue.length} questions!`;
+        questionQueue = [];
+        queuedList.innerHTML = "";
       }
     });
   </script>
