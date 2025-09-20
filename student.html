@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Quiz | B2 Tic-Tac-Toe</title>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
+  <style>
+    body { font-family: 'Roboto', sans-serif; background: #f0f4f8; margin:0; display:flex; flex-direction:column; align-items:center; }
+    h1 { margin: 1rem 0; }
+    .board { display:grid; grid-template-columns:repeat(3,120px); grid-template-rows:repeat(3,120px); gap:10px; }
+    .square { background:white; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.1); display:flex; justify-content:center; align-items:center; font-size:1.5rem; cursor:pointer; }
+    .scoreboard { margin-top:1rem; font-size:1.2rem; }
+    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); }
+    .modal-content { background:white; margin:5% auto; padding:2rem; border-radius:10px; width:90%; max-width:450px; text-align:center; }
+    .option-button { margin:0.5rem; padding:0.5rem 1rem; border:none; border-radius:8px; background:#4a90e2; color:white; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <h1>B2 Tic-Tac-Toe</h1>
+  <div class="board" id="board"></div>
+  <div class="scoreboard" id="scoreboard">X:0 | O:0</div>
+
+  <div id="quizModal" class="modal">
+    <div class="modal-content">
+      <h2 id="quizCategory"></h2>
+      <div id="quizContent"></div>
+      <button onclick="closeModal()">Close</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from "@supabase/supabase-js";
+
+    const supabaseUrl = "YOUR_SUPABASE_URL";
+    const supabaseKey = "YOUR_SUPABASE_ANON_KEY";
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const categories = ["famous_people","grammar","cities","tenses","storyboard","collocations","famous_people","vocabulary","countries"];
+
+    const boardEl = document.getElementById("board");
+    const squares = [];
+    let boardState = Array(9).fill('');
+    let turn = 'X';
+    let score = {X:0,O:0};
+
+    // Build board
+    for(let i=0;i<9;i++){
+      const sq = document.createElement("div");
+      sq.className="square";
+      sq.dataset.index=i;
+      boardEl.appendChild(sq);
+      squares.push(sq);
+
+      sq.addEventListener("click",()=>loadQuestion(i));
+    }
+
+    async function loadQuestion(idx){
+      if(boardState[idx]) return;
+      const category = categories[idx];
+      const { data, error } = await supabase.from("questions").select("*").eq("category",category);
+      if(error || !data.length){ alert("No questions available for "+category); return; }
+      const q = data[Math.floor(Math.random()*data.length)];
+      showQuestion(q, idx);
+    }
+
+    function showQuestion(q, idx){
+      document.getElementById("quizCategory").textContent = q.category;
+      const content = document.getElementById("quizContent");
+      content.innerHTML="";
+
+      if(q.type==="mc"){
+        content.innerHTML=`<p>${q.text}</p>`;
+        q.options.split(",").forEach(opt=>{
+          const btn=document.createElement("button");
+          btn.className="option-button";
+          btn.textContent=opt;
+          btn.onclick=()=>checkAnswer(opt,q.answer,idx);
+          content.appendChild(btn);
+        });
+      } else if(q.type==="fill"){
+        content.innerHTML=`<p>${q.text.replace("____","<input id='fillAns'>")}</p><button class='option-button' onclick="checkFill('${q.answer}',${idx})">Submit</button>`;
+      }
+      document.getElementById("quizModal").style.display="block";
+    }
+
+    window.checkAnswer=function(opt,answer,idx){
+      if(opt===answer){ markSquare(idx); closeModal(); }
+      else alert("Incorrect!");
+    }
+
+    window.checkFill=function(answer,idx){
+      const val=document.getElementById("fillAns").value.trim();
+      if(val.toLowerCase()===answer.toLowerCase()){ markSquare(idx); closeModal(); }
+      else alert("Incorrect!");
+    }
+
+    function markSquare(idx){
+      squares[idx].textContent=turn;
+      boardState[idx]=turn;
+      turn=turn==="X"?"O":"X";
+    }
+
+    window.closeModal=function(){
+      document.getElementById("quizModal").style.display="none";
+    }
+  </script>
+</body>
+</html>
