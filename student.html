@@ -2,108 +2,171 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <title>Tic-Tac-Toe Interactive Menu</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Quiz | B2 Tic-Tac-Toe</title>
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
+  <!-- Fonts and Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { font-family: 'Roboto', sans-serif; background: #f0f4f8; margin:0; display:flex; flex-direction:column; align-items:center; }
-    h1 { margin: 1rem 0; }
-    .board { display:grid; grid-template-columns:repeat(3,120px); grid-template-rows:repeat(3,120px); gap:10px; }
-    .square { background:white; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.1); display:flex; justify-content:center; align-items:center; font-size:1.5rem; cursor:pointer; }
-    .scoreboard { margin-top:1rem; font-size:1.2rem; }
-    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); }
-    .modal-content { background:white; margin:5% auto; padding:2rem; border-radius:10px; width:90%; max-width:450px; text-align:center; }
-    .option-button { margin:0.5rem; padding:0.5rem 1rem; border:none; border-radius:8px; background:#4a90e2; color:white; cursor:pointer; }
+    :root {
+      --bg-primary: #1a2332;
+      --bg-secondary: #243447;
+      --card-bg: rgba(255,255,255,0.07);
+      --card-border: rgba(255,255,255,0.12);
+      --accent-gold: #f4a261;
+      --accent-teal: #2dd4bf;
+      --accent-electric: #0066ff;
+      --text-primary: #fff;
+      --text-secondary: rgba(255,255,255,0.7);
+      --shadow: 0 4px 20px rgba(0,0,0,0.25);
+      --shadow-hover: 0 8px 32px rgba(0,0,0,0.35);
+      --blur: blur(16px);
+      --radius: 0.9rem;
+    }
+
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    main {
+      padding: 2rem;
+    }
+
+    .tictactoe-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 120px);
+      grid-template-rows: repeat(3, 120px);
+      gap: 1.1rem;
+      background: var(--bg-secondary);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.3rem;
+      margin: auto;
+    }
+
+    .ttt-square {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 1.1rem;
+      box-shadow: var(--shadow);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, box-shadow 0.25s, border 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ttt-square:hover, .ttt-square:focus {
+      background: rgba(44, 162, 204, 0.35);
+      color: var(--text-primary);
+      border-color: var(--accent-teal);
+      box-shadow: var(--shadow-hover);
+      outline: none;
+    }
+
+    .ttt-label {
+      font-size: 0.85rem;
+      font-weight: 400;
+      opacity: 0.9;
+      margin-top: 0.7rem;
+      color: var(--accent-gold);
+      letter-spacing: .02em;
+    }
+
+    .ttt-icon {
+      font-size: 2.6rem;
+      margin-bottom: 0.6rem;
+      color: var(--accent-electric);
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .tictactoe-grid {
+        grid-template-columns: repeat(3, 90px);
+        grid-template-rows: repeat(3, 90px);
+        padding: 0.3rem;
+        gap: 0.4rem;
+      }
+      .ttt-square {
+        font-size: .92rem;
+      }
+      .ttt-icon {
+        font-size: 2rem;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>B2 Tic-Tac-Toe</h1>
-  <div class="board" id="board"></div>
-  <div class="scoreboard" id="scoreboard">X:0 | O:0</div>
-
-  <div id="quizModal" class="modal">
-    <div class="modal-content">
-      <h2 id="quizCategory"></h2>
-      <div id="quizContent"></div>
-      <button onclick="closeModal()">Close</button>
+<main>
+  <div class="tictactoe-grid">
+    <div class="ttt-square" tabindex="0" onclick="openModule('famous-people')">
+      <span class="ttt-icon"><i class="fas fa-user"></i></span>
+      1. Famous People
+      <span class="ttt-label">Quiz / Profiles</span>
+    </div>
+    <div class="ttt-square" tabindex="0" onclick="openModule('grammar-rules')">
+      <span class="ttt-icon"><i class="fas fa-spell-check"></i></span>
+      2. English Grammar
+      <span class="ttt-label">Rules</span>
+    </div>
+    <div class="ttt-square" tabindex="0" onclick="openModule('cities')">
+      <span class="ttt-icon"><i class="fas fa-city"></i></span>
+      3. Cities
+      <span class="ttt-label">Capital & World</span>
+    </div>
+    <div class="ttt-square" tabindex="0" onclick="openModule('all-tenses')">
+      <span class="ttt-icon"><i class="fas fa-clock"></i></span>
+      4. Grammar (All Tenses)
+      <span class="ttt-label">Practice All</span>
+    </div>
+    <div class="ttt-square" tabindex="0" onclick="openModule('storyboard')">
+      <span class="ttt-icon"><i class="fas fa-book-open"></i></span>
+      5. Storyboard
+      <span class="ttt-label">Missing Letters</span>
+    </div>
+    <div class="ttt-square" tabindex="0" onclick="openModule('collocations')">
+      <span class="ttt-icon"><i class="fas fa-link"></i></span>
+      6. Collocations
+      <span class="ttt-label">English Phrases</span>
+    </div>
+    <div class="ttt-square" tabindex="0" onclick="openModule('famous-people-2')">
+      <span class="ttt-icon"><i class="fas fa-award"></i></span>
+      7. Famous People
+      <span class="ttt-label">Quiz 2</span>
+    </div>
+    <div class="ttt-square" tabindex="0" onclick="openModule('vocabulary')">
+      <span class="ttt-icon"><i class="fas fa-book"></i></span>
+      8. English Vocabulary
+      <span class="ttt-label">Words Practice</span>
+    </div>
+    <div class="ttt-square" tabindex="0" onclick="openModule('countries')">
+      <span class="ttt-icon"><i class="fas fa-earth-europe"></i></span>
+      9. Countries
+      <span class="ttt-label">Flags & Facts</span>
     </div>
   </div>
+</main>
 
-  <script type="module">
-    import { createClient } from "@supabase/supabase-js";
-
-    const supabaseUrl = "YOUR_SUPABASE_URL";
-    const supabaseKey = "YOUR_SUPABASE_ANON_KEY";
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    const categories = ["famous_people","grammar","cities","tenses","storyboard","collocations","famous_people","vocabulary","countries"];
-
-    const boardEl = document.getElementById("board");
-    const squares = [];
-    let boardState = Array(9).fill('');
-    let turn = 'X';
-    let score = {X:0,O:0};
-
-    // Build board
-    for(let i=0;i<9;i++){
-      const sq = document.createElement("div");
-      sq.className="square";
-      sq.dataset.index=i;
-      boardEl.appendChild(sq);
-      squares.push(sq);
-
-      sq.addEventListener("click",()=>loadQuestion(i));
-    }
-
-    async function loadQuestion(idx){
-      if(boardState[idx]) return;
-      const category = categories[idx];
-      const { data, error } = await supabase.from("questions").select("*").eq("category",category);
-      if(error || !data.length){ alert("No questions available for "+category); return; }
-      const q = data[Math.floor(Math.random()*data.length)];
-      showQuestion(q, idx);
-    }
-
-    function showQuestion(q, idx){
-      document.getElementById("quizCategory").textContent = q.category;
-      const content = document.getElementById("quizContent");
-      content.innerHTML="";
-
-      if(q.type==="mc"){
-        content.innerHTML=`<p>${q.text}</p>`;
-        q.options.split(",").forEach(opt=>{
-          const btn=document.createElement("button");
-          btn.className="option-button";
-          btn.textContent=opt;
-          btn.onclick=()=>checkAnswer(opt,q.answer,idx);
-          content.appendChild(btn);
-        });
-      } else if(q.type==="fill"){
-        content.innerHTML=`<p>${q.text.replace("____","<input id='fillAns'>")}</p><button class='option-button' onclick="checkFill('${q.answer}',${idx})">Submit</button>`;
-      }
-      document.getElementById("quizModal").style.display="block";
-    }
-
-    window.checkAnswer=function(opt,answer,idx){
-      if(opt===answer){ markSquare(idx); closeModal(); }
-      else alert("Incorrect!");
-    }
-
-    window.checkFill=function(answer,idx){
-      const val=document.getElementById("fillAns").value.trim();
-      if(val.toLowerCase()===answer.toLowerCase()){ markSquare(idx); closeModal(); }
-      else alert("Incorrect!");
-    }
-
-    function markSquare(idx){
-      squares[idx].textContent=turn;
-      boardState[idx]=turn;
-      turn=turn==="X"?"O":"X";
-    }
-
-    window.closeModal=function(){
-      document.getElementById("quizModal").style.display="none";
-    }
-  </script>
+<script>
+  // Interactive - openModule could redirect or open modal
+  function openModule(moduleKey) {
+    alert('Selected module: ' + moduleKey + '\nIn the full app, this will load or open the appropriate section for teachers to manage data.');
+    // For future: window.location.href = `/modules/${moduleKey}.html`;
+  }
+</script>
 </body>
 </html>
