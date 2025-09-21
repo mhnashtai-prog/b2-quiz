@@ -23,7 +23,6 @@
       --blur: blur(16px);
       --radius: 0.9rem;
     }
-
     body {
       font-family: 'Inter', Arial, sans-serif;
       min-height: 100vh;
@@ -33,12 +32,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-direction: column;
+      padding: 1rem;
     }
-
     main {
       padding: 2rem;
     }
-
     .tictactoe-grid {
       display: grid;
       grid-template-columns: repeat(3, 120px);
@@ -48,9 +47,8 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       padding: 1.3rem;
-      margin: auto;
+      margin: 1rem auto;
     }
-
     .ttt-square {
       background: var(--card-bg);
       border: 2px solid var(--card-border);
@@ -69,7 +67,6 @@
       position: relative;
       overflow: hidden;
     }
-
     .ttt-square:hover, .ttt-square:focus {
       background: rgba(44, 162, 204, 0.35);
       color: var(--text-primary);
@@ -77,7 +74,6 @@
       box-shadow: var(--shadow-hover);
       outline: none;
     }
-
     .ttt-label {
       font-size: 0.85rem;
       font-weight: 400;
@@ -86,13 +82,11 @@
       color: var(--accent-gold);
       letter-spacing: .02em;
     }
-
     .ttt-icon {
       font-size: 2.6rem;
       margin-bottom: 0.6rem;
       color: var(--accent-electric);
     }
-
     /* Responsive */
     @media (max-width: 600px) {
       .tictactoe-grid {
@@ -108,6 +102,59 @@
         font-size: 2rem;
       }
     }
+    #quiz-container {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1rem 1.5rem;
+      margin-top: 2rem;
+      max-width: 600px;
+      width: 100%;
+      color: var(--text-primary);
+      text-align: left;
+      display: none;
+    }
+    #quiz-question {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+    .quiz-option {
+      display: block;
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: var(--radius);
+      margin: 0.4rem 0;
+      padding: 0.6rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: background 0.2s, color 0.2s;
+    }
+    .quiz-option:hover {
+      background: var(--accent-teal);
+      color: var(--text-primary);
+    }
+    .quiz-option.correct {
+      background: #26a69a;
+      color: white;
+      border-color: #26a69a;
+      cursor: default;
+    }
+    .quiz-option.incorrect {
+      background: #e64848;
+      color: white;
+      border-color: #e64848;
+      cursor: default;
+    }
+    #close-quiz {
+      margin-top: 1rem;
+      padding: 0.6rem 1.2rem;
+      background: var(--accent-gold);
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 600;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -118,54 +165,119 @@
       1. Famous People
       <span class="ttt-label">Quiz / Profiles</span>
     </div>
-    <div class="ttt-square" tabindex="0" onclick="openModule('grammar-rules')">
+    <div class="ttt-square" tabindex="0" onclick="alert('Coming soon!')">
       <span class="ttt-icon"><i class="fas fa-spell-check"></i></span>
       2. English Grammar
       <span class="ttt-label">Rules</span>
     </div>
-    <div class="ttt-square" tabindex="0" onclick="openModule('cities')">
+    <div class="ttt-square" tabindex="0" onclick="alert('Coming soon!')">
       <span class="ttt-icon"><i class="fas fa-city"></i></span>
       3. Cities
       <span class="ttt-label">Capital & World</span>
     </div>
-    <div class="ttt-square" tabindex="0" onclick="openModule('all-tenses')">
+    <div class="ttt-square" tabindex="0" onclick="alert('Coming soon!')">
       <span class="ttt-icon"><i class="fas fa-clock"></i></span>
       4. Grammar (All Tenses)
       <span class="ttt-label">Practice All</span>
     </div>
-    <div class="ttt-square" tabindex="0" onclick="openModule('storyboard')">
+    <div class="ttt-square" tabindex="0" onclick="alert('Coming soon!')">
       <span class="ttt-icon"><i class="fas fa-book-open"></i></span>
       5. Storyboard
       <span class="ttt-label">Missing Letters</span>
     </div>
-    <div class="ttt-square" tabindex="0" onclick="openModule('collocations')">
+    <div class="ttt-square" tabindex="0" onclick="alert('Coming soon!')">
       <span class="ttt-icon"><i class="fas fa-link"></i></span>
       6. Collocations
       <span class="ttt-label">English Phrases</span>
     </div>
-    <div class="ttt-square" tabindex="0" onclick="openModule('famous-people-2')">
+    <div class="ttt-square" tabindex="0" onclick="alert('Coming soon!')">
       <span class="ttt-icon"><i class="fas fa-award"></i></span>
       7. Famous People
       <span class="ttt-label">Quiz 2</span>
     </div>
-    <div class="ttt-square" tabindex="0" onclick="openModule('vocabulary')">
+    <div class="ttt-square" tabindex="0" onclick="alert('Coming soon!')">
       <span class="ttt-icon"><i class="fas fa-book"></i></span>
       8. English Vocabulary
       <span class="ttt-label">Words Practice</span>
     </div>
-    <div class="ttt-square" tabindex="0" onclick="openModule('countries')">
+    <div class="ttt-square" tabindex="0" onclick="alert('Coming soon!')">
       <span class="ttt-icon"><i class="fas fa-earth-europe"></i></span>
       9. Countries
       <span class="ttt-label">Flags & Facts</span>
     </div>
   </div>
+
+  <div id="quiz-container">
+    <p id="quiz-question">Question appears here.</p>
+    <div id="quiz-options"></div>
+    <button id="close-quiz" onclick="closeQuiz()">Close Quiz</button>
+  </div>
 </main>
 
 <script>
-  // Interactive - openModule could redirect or open modal
-  function openModule(moduleKey) {
-    alert('Selected module: ' + moduleKey + '\nIn the full app, this will load or open the appropriate section for teachers to manage data.');
-    // For future: window.location.href = `/modules/${moduleKey}.html`;
+  const jsonUrl = 'https://raw.githubusercontent.com/yourusername/yourrepo/main/famous-people.json'; // Replace with your JSON raw URL
+
+  let currentQuestion = null;
+  let buttonsDisabled = false;
+
+  async function openModule(moduleKey) {
+    if(moduleKey === 'famous-people') {
+      await loadRandomQuestion();
+    } else {
+      alert('This module is not yet implemented.');
+    }
+  }
+
+  async function loadRandomQuestion() {
+    try {
+      const res = await fetch(jsonUrl);
+      if (!res.ok) throw new Error('Failed to load JSON file');
+      const data = await res.json();
+      const questions = data['famous-people'];
+      if(!questions || questions.length === 0) {
+        alert('No questions found in JSON.');
+        return;
+      }
+      const randomIndex = Math.floor(Math.random() * questions.length);
+      showQuestion(questions[randomIndex]);
+    } catch(err) {
+      alert('Error loading questions: ' + err.message);
+      console.error(err);
+    }
+  }
+
+  function showQuestion(q) {
+    currentQuestion = q;
+    buttonsDisabled = false;
+    const container = document.getElementById('quiz-container');
+    const questionEl = document.getElementById('quiz-question');
+    const optionsEl = document.getElementById('quiz-options');
+
+    container.style.display = 'block';
+    questionEl.textContent = q.question;
+    optionsEl.innerHTML = '';
+
+    q.options.forEach((optionText, idx) => {
+      const btn = document.createElement('button');
+      btn.textContent = optionText;
+      btn.className = 'quiz-option';
+      btn.onclick = () => {
+        if(buttonsDisabled) return;
+        buttonsDisabled = true;
+        if(idx === q.answer) {
+          btn.classList.add('correct');
+          alert('Correct!');
+        } else {
+          btn.classList.add('incorrect');
+          alert(`Wrong! Correct answer is: ${q.options[q.answer]}`);
+        }
+      };
+      optionsEl.appendChild(btn);
+    });
+  }
+
+  function closeQuiz() {
+    document.getElementById('quiz-container').style.display = 'none';
   }
 </script>
 </body>
